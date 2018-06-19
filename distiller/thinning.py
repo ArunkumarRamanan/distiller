@@ -358,7 +358,8 @@ def create_thinning_recipe_filters(sgraph, model, zeros_mask_dict):
             assert len(bn_layers) == 1
             # Thinning of the BN layer that follows the convolution
             bn_layer_name = denormalize_module_name(model, bn_layers[0])
-            bn_thinning(thinning_recipe, layers, bn_layer_name, len_thin_features=num_nnz_filters, thin_features=indices)
+            bn_thinning(thinning_recipe, layers, bn_layer_name,
+                        len_thin_features=num_nnz_filters, thin_features=indices)
     return thinning_recipe
 
 
@@ -432,7 +433,8 @@ def execute_thinning_recipe(model, zeros_mask_dict, recipe, loaded_from_file=Fal
                 indices_to_select = val[1]
                 # Check if we're trying to trim a parameter that is already "thin"
                 if running.size(dim_to_trim) != len(indices_to_select):
-                    msglogger.info("[thinning] {}: setting {} to {}".format(layer_name, attr, len(indices_to_select)))
+                    msglogger.info("[thinning] {}: setting {} to {}".
+                                   format(layer_name, attr, len(indices_to_select)))
                     setattr(layers[layer_name], attr,
                             torch.index_select(running, dim=dim_to_trim, index=indices_to_select))
             else:
