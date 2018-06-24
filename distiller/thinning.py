@@ -29,15 +29,13 @@ documented in a different place.
 
 import math
 import logging
-import copy
-import re
 from collections import namedtuple
 import torch
 from .policy import ScheduledTrainingPolicy
 import distiller
 from distiller import normalize_module_name, denormalize_module_name
 from apputils import SummaryGraph
-from models import ALL_MODEL_NAMES, create_model
+from models import create_model
 msglogger = logging.getLogger()
 
 ThinningRecipe = namedtuple('ThinningRecipe', ['modules', 'parameters'])
@@ -191,7 +189,7 @@ def find_nonzero_channels_list(param, param_name):
 
 
 def apply_and_save_recipe(model, zeros_mask_dict, thinning_recipe):
-    if len(thinning_recipe.modules)>0 or len(thinning_recipe.parameters)>0:
+    if len(thinning_recipe.modules) > 0 or len(thinning_recipe.parameters) > 0:
         # Now actually remove the filters, chaneels and make the weight tensors smaller
         execute_thinning_recipe(model, zeros_mask_dict, thinning_recipe)
 
@@ -226,7 +224,7 @@ def create_thinning_recipe_channels(sgraph, model, zeros_mask_dict):
     msglogger.info("Invoking create_thinning_recipe_channels")
 
     thinning_recipe = ThinningRecipe(modules={}, parameters={})
-    layers = {mod_name : m for mod_name, m in model.named_modules()}
+    layers = {mod_name: m for mod_name, m in model.named_modules()}
 
     # Traverse all of the model's parameters, search for zero-channels, and
     # create a thinning recipe that descibes the required changes to the model.
@@ -289,7 +287,7 @@ def create_thinning_recipe_filters(sgraph, model, zeros_mask_dict):
     msglogger.info("Invoking create_thinning_recipe_filters")
 
     thinning_recipe = ThinningRecipe(modules={}, parameters={})
-    layers = {mod_name : m for mod_name, m in model.named_modules()}
+    layers = {mod_name: m for mod_name, m in model.named_modules()}
 
     for param_name, param in model.named_parameters():
         # We are only interested in 4D weights
